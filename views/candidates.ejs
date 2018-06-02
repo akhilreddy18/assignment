@@ -1,1 +1,16 @@
+<% include partials/header %>
 
+<div class="container">
+    <h3> Candidates list</h3>
+    <% candidates.forEach(function(candidate){ %>
+      <div> 
+          <ul>
+          <li><a href="#"><%= candidate.name %> - <%= candidate.age %></a></li>
+              <p><a href="/candidates"> edit</a><a href="/candidates"> delete</a></p>
+          </ul>         
+    </div>
+    <% }); %>
+    <a class="btn btn-primary btn-lg" href="/candidates/new"> Add a new candidate</a>
+</div>
+
+<% include partials/footer %>

@@ -1,0 +1,12 @@
+<% include partials/header %>
+<div class="container">
+    <h1> Add a new candidate</h1>
+    <form action="/candidates" method="POST">
+    <input type="text" placeholder="name" name="name">
+    <input type="text" placeholder="age" name="age">
+    <button> Submit </button>
+    </form>
+    <a href="/candidates">Go back!</a>
+</div>
+
+<% include partials/footer %>
