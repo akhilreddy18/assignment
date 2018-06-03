@@ -1,16 +1,22 @@
 <% include partials/header %>
 
-<div class="container">
+<div class="container mt-5">
     <h3> Candidates list</h3>
     <% candidates.forEach(function(candidate){ %>
-      <div> 
+      <div class="container mt-3"> 
           <ul>
-          <li><a href="#"><%= candidate.name %> - <%= candidate.age %></a></li>
-              <p><a href="/candidates"> edit</a><a href="/candidates"> delete</a></p>
+              <li>
+                  <strong><%= candidate.name %>  -  </strong><%= candidate.email %>
+                  <a href="/candidates/<%= candidate.id %>" class="badge badge-light mx-3">Show details..</a>
+                  <div id="editdelete">
+                      <button class="badge badge-primary "><a href="/edit_candidates/<%= candidate.id %>" class="text-light">Edit</a></button>
+                      <button class="badge badge-danger delete-candidate" data-id=<%= candidate.id %>>Delete</button>
+                  </div>
+              </li>
           </ul>         
     </div>
     <% }); %>
-    <a class="btn btn-primary btn-lg" href="/candidates/new"> Add a new candidate</a>
+    <a class="btn btn-dark btn-lg" href="/candidates/new"> Add a new candidate</a>
 </div>
 
 <% include partials/footer %>
