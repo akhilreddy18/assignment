@@ -1,0 +1,24 @@
+<% include partials/header %>
+
+<div class="container mt-5">
+    <h1></h1>
+    <form method="POST" action="/edit_candidates/<%= candidate.id %>">
+      <div id="form-"> 
+        <label>Candidate name:</label>
+        <input class="form-control" name = "name" value=<%= candidate.name %> type="text"/>
+      </div>
+      <div id="form-group">
+        <label>AGE:</label>
+        <input class="form-control" name = "age" value=<%= candidate.age %> type="text"/>
+      </div>
+      
+      <div id="form-group">
+        <label>EMAIL:</label>
+        <input class="form-control" name = "email" value=<%= candidate.email %> type="text"/>
+      </div>
+      <br/>
+      <input class="btn btn-primary" type="submit" value="Submit"/>
+    </form>
+</div>
+
+<% include partials/footer %>
