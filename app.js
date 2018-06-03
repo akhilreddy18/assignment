@@ -1,58 +1,143 @@
-var express = require("express");
-var app = express();
+var express     = require("express"),
+      app       = express(),
+       fs       = require("fs"),
+ bodyParser     = require("body-parser");
+ var uniqid = require('uniqid');
+
 app.set("view engine", "ejs");
-var bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended:true}));
-//app.use("public");
+app.use('/assets',express.static('public'));
 
- var candidates = [
-        {name: "Akhil", age: "22"},
-        {name: "Indra", age: "25"},
-        {name: "Zaahid", age:"30"},
-        {name: "Akhil", age: "22"},
-        {name: "Indra", age: "25"},
-        {name: "Zaahid", age:"30"},
-        {name: "Akhil", age: "22"},
-        {name: "Indra", age: "25"},
-        {name: "Zaahid", age:"30"}
-    ];
 
-app.get("/", function(req, res){
+function findById(id){
+    let data = JSON.parse(fs.readFileSync("data.json"));
+    for(var i=0; i<data["results"].length; i++){
+        
+        if(id == data["results"][i]['id']){
+            var candidate = data["results"][i];
+        }
+    }
+    return candidate;
+}
+
+function findIndex(id) {
+    let data = JSON.parse(fs.readFileSync("data.json"));
+    for(var i=0; i<data["results"].length; i++){
+        if(id == data["results"][i]['id']){
+            return i;
+        }
+    }
+    return -1;
+}
+
+// ================Routes===========================
+
+app.get("/", (req, res)=>{
     res.redirect("candidates");
 });
 
-app.get("/candidates", function(req, res){
+app.get("/candidates", (req, res)=>{
+    let data = JSON.parse(fs.readFileSync("data.json"));
+    let candidates = data['results'];
     res.render("candidates", {candidates: candidates});
 });
 
-app.post("/candidates", function(req, res){
-    var name = req.body.name;
-    var age = req.body.age;
-    var newcandidate = {name: name, age: age};
-    candidates.push(newcandidate);
-    res.redirect("/candidates");
-});
 
-app.get("/candidates/new", function(req, res){
+app.get("/candidates/new", (req, res)=>{
     res.render("new");
 });
 
-app.get("/careers", function(req, res){
+
+app.post("/candidates", (req, res)=>{
+    let data = JSON.parse(fs.readFileSync("data.json"));
+    let candidates = data['results'];
+    var name = (req.body.name) ? req.body.name : "";
+    var age = (req.body.age) ? req.body.age : "";
+    var email = (req.body.email) ? req.body.email : "";
+    var newcandidate = {id:uniqid(), name: name, age: age, email:email};
+    candidates.push(newcandidate);
+    
+    let temp ={
+      'results':candidates
+    }
+    let jsonData = JSON.stringify(temp);
+    fs.writeFile('data.json', jsonData, 'utf8', (argument)=>{
+    });
+  
+    res.redirect("/candidates");
+});
+
+
+app.get("/careers", (req, res)=>{
     res.render("careers");
 });
 
-app.get("/contact", function(req, res){
+app.get("/contact", (req, res)=>{
     res.render("careers");
 });
 
-app.get("/login", function(req, res){
+app.get("/login", (req, res)=>{
     res.render("login");
 });
 
-app.get("/register", function(req, res){
+app.get("/register", (req, res)=>{
     res.render("register");
 });
 
-app.listen(3000, function(){
+
+app.get("/candidates/:id", (req, res)=>{
+    var candidate = findById(req.params.id);
+    res.render("show", {
+      candidate:candidate
+    });
+});
+
+
+app.get("/edit_candidates/:id", (req, res)=>{
+    var candidate = findById(req.params.id);
+      res.render('edit_candidate', {
+        title:'Edit Candidate',
+        candidate:candidate
+      });
+});
+
+
+app.post("/edit_candidates/:id",(req,res)=>{
+    let data = JSON.parse(fs.readFileSync("data.json"));
+    let candidate = {};
+    candidate.id = req.params.id;
+    var index = findIndex(candidate.id);
+    if(index !== -1){
+        data["results"][index]['age']=req.body.age;
+        data["results"][index]['name']=req.body.name;
+        data["results"][index]['email']=req.body.email;
+    }
+    const jsonData = JSON.stringify(data);
+    fs.writeFile('data.json', jsonData, 'utf8', (argument)=>{
+        console.log("Details are updated");
+    });
+    res.redirect('/');
+});
+
+
+app.delete('/candidate_delete/:id',(req, res)=>{
+    let data = JSON.parse(fs.readFileSync("data.json"));
+    let candidates = data['results'];
+  var index = findIndex(req.params.id);
+  candidates.splice(index, 1);
+  let temp ={
+      'results':candidates
+  }
+  let jsonData = JSON.stringify(temp);
+  fs.writeFile('data.json', jsonData, 'utf8', (argument)=>{
+      console.log("Candidate deleted");
+  });
+  res.redirect('/');
+  
+});
+
+
+app.listen(process.env.PORT, process.env.IP, function(){
     console.log("Asolvi server has started");
 });
+
