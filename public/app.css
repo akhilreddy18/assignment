@@ -1,1 +1,8 @@
+#editdelete{
+    display: none;
+}
+
+ul:hover #editdelete{
+    display: block;
+}
 
